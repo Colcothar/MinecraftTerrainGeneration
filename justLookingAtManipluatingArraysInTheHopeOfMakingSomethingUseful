@@ -1,0 +1,57 @@
+import numpy as np
+
+array = np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
+#array = np.zeros((32, 128, 32))
+
+print(array)
+
+xSize= 2
+ySize = 1
+
+
+print("\nZ: " , len(array[0][0]))
+Z=len(array[0][0])
+print("\nY: " , len(array[0]))
+Y=len(array[0])
+print("\nX: " , len(array))
+X=len(array)
+
+val = list()
+
+for x in range(X):
+  for z in range(Z):
+    for y in range(Y):
+
+      val.append(array[x][y][z])
+print(val)
+
+
+xInputs = list()
+xOutputs = list()
+
+chunkLength = Y*xSize
+print(Y*xSize)
+
+for i in range(len(val)):
+
+  for i in range(xSize):
+  xInSeq=val[0:chunkLength]
+  xOutSeq=val[chunkLength:chunkLength+ySize]
+    
+
+xInputs.append(xInSeq)
+xOutputs.append(xOutSeq) 
+
+print(xInputs)
+print(xOutputs)
+    
+print(val)
+
+#oneBlocks = array.reshape(2*3*2) #Resgape it into a 1D array
+#print(oneBlocks)
+
+
+
+
+
+
