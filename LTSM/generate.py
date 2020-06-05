@@ -155,7 +155,19 @@ while flag1 == 1:
     x_input2=x_input.reshape((1, int(chunkLength*Z), n_features))
     y_output=model.predict(x_input2, verbose = 0)
 
-    print(plump(Z, Y, ySize, y_output[0], True))
+    
+
+    y_output3d = plump(Z, Y, ySize, y_output[0], True)
+
+    print(plump(Z, Y, ySize, y_output[0], False))
+    print(y_output3d)
+
+    sf = SchematicFile(shape=(Z, Y, ySize))
+    assert sf.blocks.shape == (Z,Y, ySize)
+
+
+    sf.blocks= y_output3d
+    sf.save('example.schematic')
 
 
     flag1=2
