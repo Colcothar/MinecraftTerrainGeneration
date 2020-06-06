@@ -10,3 +10,5 @@ TODO:
   Fix problem where DCGAN is only returning values between -1 and 1 (we need 0-8 to begin with)
   
   
+  ##NOTE
+Numpy arrays are inedexed in the format arr[z][y][x] but schematic files are indexed sf.blocks[y,z,x], similar to in minecraft
