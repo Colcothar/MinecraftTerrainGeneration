@@ -2,9 +2,9 @@ from __future__ import print_function, division
 
 from keras.datasets import mnist
 from keras.layers import Input, Dense, Reshape, Flatten, Dropout
-from keras.layers import BatchNormalization, Activation, ZeroPadding2D
+from keras.layers import BatchNormalization, Activation, ZeroPadding2D, ZeroPadding3D
 from keras.layers.advanced_activations import LeakyReLU
-from keras.layers.convolutional import UpSampling2D, Conv2D
+from keras.layers.convolutional import UpSampling2D, Conv2D, UpSampling3D, Conv3D
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
 
@@ -12,20 +12,18 @@ import matplotlib.pyplot as plt
 
 import sys
 
-import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
 import numpy as np
-images = np.load("C:/Users/adamj/Documents/Minecraft/GAN/DCGAN/schematics/schematics.npy")
+images = np.load("C:/Users/adamj/Documents/MinecraftTerrainGeneration/DCGAN/islands4x4/islands4x4-new.npy")
+
 
 class DCGAN():
     def __init__(self):
         # Input shape
-        self.img_rows = 8
-        self.img_cols = 256
+        self.img_rows = 4
+        self.img_cols = 4
+        self.img_depth = 4
         self.channels = 1
-        self.img_shape = (self.img_rows, self.img_cols, self.channels)
+        self.img_shape = (self.img_rows, self.img_cols, self.img_depth, self.channels)
         self.latent_dim = 100
 
         optimizer = Adam(0.0002, 0.5)
@@ -58,17 +56,17 @@ class DCGAN():
 
         model = Sequential()
 
-        model.add(Dense(128  * 64 * 2, activation="relu", input_dim=self.latent_dim))
-        model.add(Reshape((2, 64, 128)))
-        model.add(UpSampling2D())
-        model.add(Conv2D(128, kernel_size=3, padding="same"))
+        model.add(Dense(32 * 1 * 1 * 1, activation="relu", input_dim=self.latent_dim))
+        model.add(Reshape((1, 1, 1, 32)))
+        model.add(UpSampling3D())
+        model.add(Conv3D(128, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
-        model.add(UpSampling2D())
-        model.add(Conv2D(64, kernel_size=3, padding="same"))
+        model.add(UpSampling3D())
+        model.add(Conv3D(64, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
-        model.add(Conv2D(self.channels, kernel_size=3, padding="same"))
+        model.add(Conv3D(self.channels, kernel_size=3, padding="same"))
         model.add(Activation("tanh"))
 
         model.summary()
@@ -82,19 +80,19 @@ class DCGAN():
 
         model = Sequential()
 
-        model.add(Conv2D(32, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
+        model.add(Conv3D(32, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
-        model.add(Conv2D(64, kernel_size=3, strides=2, padding="same"))
-        model.add(ZeroPadding2D(padding=((0,1),(0,1))))
+        model.add(Conv3D(64, kernel_size=3, strides=2, padding="same"))
+        model.add(ZeroPadding3D(padding=((0,1),(0,1),(0,1))))
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
-        model.add(Conv2D(128, kernel_size=3, strides=2, padding="same"))
+        model.add(Conv3D(128, kernel_size=3, strides=2, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
-        model.add(Conv2D(256, kernel_size=3, strides=1, padding="same"))
+        model.add(Conv3D(256, kernel_size=3, strides=1, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
@@ -108,14 +106,16 @@ class DCGAN():
 
         return Model(img, validity)
 
-    def train(self, epochs, batch_size=128, save_interval=50):
+    def train(self, epochs, batch_size=32, save_interval=5):
 
         # Load the dataset
         X_train = images
 
         # Rescale -1 to 1
-        X_train = X_train / 127.5 - 1.
-        X_train = np.expand_dims(X_train, axis=3)
+        print(X_train[0][0])
+        #X_train = X_train / 127.5 - 1.
+        X_train = np.expand_dims(X_train, axis=4)
+        print(X_train[0][0])
 
         # Adversarial ground truths
         valid = np.ones((batch_size, 1))
@@ -162,8 +162,8 @@ class DCGAN():
         # Rescale images 0 - 1
         #gen_imgs = 0.5 * gen_imgs + 0.5
 
-        np.save("C:/Users/adamj/Documents/Minecraft/GAN/DCGAN/arrays/mnist_%d.npy" % epoch, gen_imgs)
-
+        np.save("C:/Users/adamj/Documents/MinecraftTerrainGeneration/DCGAN/arrays/mnist_%d.npy" % epoch, gen_imgs)
+        '''
         fig, axs = plt.subplots(r, c)
         cnt = 0
         for i in range(r):
@@ -171,10 +171,11 @@ class DCGAN():
                 axs[i,j].imshow(gen_imgs[cnt, :,:,0], cmap='gray')
                 axs[i,j].axis('off')
                 cnt += 1
-        fig.savefig("C:/Users/adamj/Documents/Minecraft/GAN/DCGAN/images/mnist_%d.png" % epoch)
+        fig.savefig("C:/Users/adamj/Documents/MinecraftTerrainGeneration/DCGAN/images/mnist_%d.png" % epoch)
         plt.close()
+        '''
 
 
 if __name__ == '__main__':
     dcgan = DCGAN()
-    dcgan.train(epochs=4000, batch_size=32, save_interval=50)
+    dcgan.train(epochs=4000, batch_size=32, save_interval=2)
