@@ -19,7 +19,7 @@ import math
 
 #print(array)
 
-array = essentials.makeArray('/home/ist/Desktop/AI/Minecraft/2048.schematic')
+array = essentials.makeArray('/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/2048.schematic')
 
 global xSize
 xSize = 2
@@ -137,7 +137,7 @@ while flag1 == 1:
     model.compile(optimizer = 'adam', loss = 'mse')
     model.save('model')
 
-    filepath = "checkpoint.h5"
+    filepath = '/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/checkpoint.h5'
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
     callbacks_list = [checkpoint]
 
@@ -146,7 +146,7 @@ while flag1 == 1:
 	# demonstrate prediction
     model = keras.models.load_model('model')
 
-    x_input=np.array(flatten(essentials.makeArray('/home/ist/Desktop/AI/Minecraft/32.schematic'), Z,Y,xSize))          
+    x_input=np.array(flatten(essentials.makeArray('/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/32.schematic'), Z,Y,xSize))          
     x_input2=x_input.reshape((1, int(chunkLength*Z), 1))
     y_output=model.predict(x_input2, verbose = 0)
 
@@ -156,6 +156,6 @@ while flag1 == 1:
     print(plump(Z, Y, ySize, y_output[0], False))
     print(y_output3d)
 
-    essentials.makeBlocks(y_output3d, '/home/ist/Desktop/AI/Minecraft/output.schematic', Z,Y,ySize)
+    essentials.makeBlocks(y_output3d, '/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/output.schematic', Z,Y,ySize)
 
     flag1=2
