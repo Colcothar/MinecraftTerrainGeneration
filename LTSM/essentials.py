@@ -7,11 +7,11 @@ def makeArray(location):
     
 
     Y = len(sf.blocks)
-    print("Y: ", Y)
+    #print("Y: ", Y)
     Z = len(sf.blocks[0])
-    print("Z: ", Z)
+    #print("Z: ", Z)
     X = len(sf.blocks[0][0])
-    print("X: ", X)
+    #print("X: ", X)
 
     breakpoint
     array = np.zeros(Z*Y*X).reshape(Z, Y, X)
@@ -32,11 +32,11 @@ def makeBlocks(input,location, Z, Y, X):
                 sf.blocks[y,z,x] = input[z,y,x] 
 
     Y = len(sf.blocks)
-    print("Y: ", Y)
+    #print("Y: ", Y)
     Z = len(sf.blocks[0])
-    print("Z: ", Z)
+    #print("Z: ", Z)
     X = len(sf.blocks[0][0])
-    print("X: ", X)
+    #print("X: ", X)
 
 
     sf.save('location')

@@ -9,10 +9,6 @@ from keras.callbacks import ModelCheckpoint
 from matplotlib import pyplot as plt
 import math
 
-
-
-
-
 # array = np.array([[[1, 2, 3]], [[4,5,6]]])
 # array = np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]], [[13, 14, 15], [16, 17, 18]]])
 # array = np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[10, 11, 12], [13, 14, 15], [16, 17, 18]], [[19, 20, 21],[22, 23, 24], [25, 26, 27]]])
@@ -73,8 +69,6 @@ Z, Y, X=32, 32, minVal(X)
 print("\nZ: ",  Z)
 print("\nY: ",  Y)
 print("\nX: ",  X)
-
-
 
 val=flatten(array, Z, Y, X)
 
@@ -162,12 +156,6 @@ while flag1 == 1:
     print(plump(Z, Y, ySize, y_output[0], False))
     print(y_output3d)
 
-    sf = SchematicFile(shape=(Z, Y, ySize))
-    assert sf.blocks.shape == (Z,Y, ySize)
-
-
-    sf.blocks= y_output3d
-    sf.save('example.schematic')
-
+    essentials.makeBlocks(y_output3d, '/home/ist/Desktop/AI/Minecraft/output.schematic', 32,Y,ySize)
 
     flag1=2
