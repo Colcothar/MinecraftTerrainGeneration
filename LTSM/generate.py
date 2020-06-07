@@ -5,6 +5,7 @@ from itertools import chain
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
+from keras.callbacks import ModelCheckpoint
 from matplotlib import pyplot as plt
 import math
 
@@ -82,7 +83,7 @@ Z, Y, X=array.shape
 #print("\nX: ",  X)
 
 # Set new array shape
-Z, Y, X=16, Y, minVal(X)
+Z, Y, X=32, Y, minVal(X)
 
 print("\nZ: ",  Z)
 print("\nY: ",  Y)
