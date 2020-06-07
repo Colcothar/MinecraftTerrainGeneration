@@ -1,6 +1,6 @@
 from nbtschematic import SchematicFile
 import numpy as np
-
+import essentials
 from itertools import chain
 from keras.models import Sequential
 from keras.layers import LSTM
@@ -9,22 +9,7 @@ from keras.callbacks import ModelCheckpoint
 from matplotlib import pyplot as plt
 import math
 
-def makeArray(location):
-    sf = SchematicFile.load(location)
 
-    Y = len(sf.blocks)
-    Y = 32
-    Z = len(sf.blocks[0])
-    X = len(sf.blocks[0][0])
-
-    breakpoint
-    array = np.zeros(Z*Y*X).reshape(Z, Y, X)
-
-    for y in range(Y):
-        for z in range(Z):
-            for x in range(X):
-                array[z,y,x] = sf.blocks[y,z,x]
-    return array
 
 
 
@@ -37,7 +22,7 @@ def makeArray(location):
 
 #print(array)
 
-array = makeArray('/home/ist/Desktop/AI/Minecraft/2048.schematic')
+array = essentials.makeArray('/home/ist/Desktop/AI/Minecraft/2048.schematic')
 
 global xSize
 xSize = 2
@@ -83,7 +68,7 @@ Z, Y, X=array.shape
 #print("\nX: ",  X)
 
 # Set new array shape
-Z, Y, X=32, Y, minVal(X)
+Z, Y, X=32, 32, minVal(X)
 
 print("\nZ: ",  Z)
 print("\nY: ",  Y)
