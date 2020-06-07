@@ -2,7 +2,8 @@ from nbtschematic import SchematicFile
 import numpy as np
 import essentials
 from itertools import chain
-from keras.models import Sequential
+import keras
+
 from keras.layers import LSTM
 from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
@@ -128,7 +129,7 @@ while flag1 == 1:
     n_features=1
     xInputs=xInputs.reshape((xInputs.shape[0], xInputs.shape[1], n_features))
 	# define model
-    model=Sequential()
+    model=keras.models.Sequential()
     model.add(LSTM(10, activation='relu', return_sequences=True,
               input_shape=(int(chunkLength*Z), n_features)))
     model.add(LSTM(10, activation='relu'))
@@ -145,8 +146,7 @@ while flag1 == 1:
 	# demonstrate prediction
     model = keras.models.load_model('model')
 
-       
-    x_input=np.array(flatten(makeArray('/home/ist/Desktop/AI/Minecraft/32.schematic'), Z,Y,xSize))          
+    x_input=np.array(flatten(essentials.makeArray('/home/ist/Desktop/AI/Minecraft/32.schematic'), Z,Y,xSize))          
     x_input2=x_input.reshape((1, int(chunkLength*Z), 1))
     y_output=model.predict(x_input2, verbose = 0)
 
@@ -156,6 +156,6 @@ while flag1 == 1:
     print(plump(Z, Y, ySize, y_output[0], False))
     print(y_output3d)
 
-    essentials.makeBlocks(y_output3d, '/home/ist/Desktop/AI/Minecraft/output.schematic', 32,Y,ySize)
+    essentials.makeBlocks(y_output3d, '/home/ist/Desktop/AI/Minecraft/output.schematic', Z,Y,ySize)
 
     flag1=2
