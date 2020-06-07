@@ -1,26 +1,14 @@
 from nbtschematic import SchematicFile
 import numpy as np
-
+import essentials
 from itertools import chain
-from keras.models import Sequential
+import keras
+
 from keras.layers import LSTM
 from keras.layers import Dense
+from keras.callbacks import ModelCheckpoint
 from matplotlib import pyplot as plt
 import math
-
-
-sf = SchematicFile.load('/home/ist/Desktop/AI/Minecraft/chunk1.schematic')
-
-breakpoint
-array = np.zeros(16*16*8).reshape(8, 16, 16)
-
-for x in range(8):
-    for z in range(16):
-        for y in range(16):
-            array[x][z][y] = sf.blocks[x, z, y]
-
-# print(blocks)
-
 
 # array = np.array([[[1, 2, 3]], [[4,5,6]]])
 # array = np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]], [[13, 14, 15], [16, 17, 18]]])
@@ -28,6 +16,10 @@ for x in range(8):
 # array = np.array([[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]], [[25, 26, 27, 28],[29, 30, 31, 32], [33, 34, 35, 36]]])
 # array = np.zeros((140, 64, 56))
 
+
+#print(array)
+
+array = essentials.makeArray('/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/2048.schematic')
 
 global xSize
 xSize = 2
@@ -68,18 +60,16 @@ def plump(Z, Y, X, val, format):
 
 Z, Y, X=array.shape
 
-print("\nZ: ",  Z)
-print("\nY: ",  Y)
-print("\nX: ",  X)
+#print("\nZ: ",  Z)
+#print("\nY: ",  Y)
+#print("\nX: ",  X)
 
 # Set new array shape
-Z, Y, X=xSize, Y, minVal(X)
+Z, Y, X=32, 32, minVal(X)
 
 print("\nZ: ",  Z)
 print("\nY: ",  Y)
 print("\nX: ",  X)
-
-
 
 val=flatten(array, Z, Y, X)
 
@@ -135,39 +125,37 @@ print(xOutputs)
 
 flag1=1
 while flag1 == 1:
+
     n_features=1
     xInputs=xInputs.reshape((xInputs.shape[0], xInputs.shape[1], n_features))
 	# define model
-    model=Sequential()
-    model.add(LSTM(100, activation='relu', return_sequences=True,
+    model=keras.models.Sequential()
+    model.add(LSTM(10, activation='relu', return_sequences=True,
               input_shape=(int(chunkLength*Z), n_features)))
-    model.add(LSTM(100, activation='relu'))
+    model.add(LSTM(10, activation='relu'))
     model.add(Dense(Y*ySize*Z))
     model.compile(optimizer = 'adam', loss = 'mse')
+    model.save('model')
+
+    filepath = '/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/checkpoint.h5'
+    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
+    callbacks_list = [checkpoint]
 
 	# fit model
-    model.fit(xInputs, xOutputs, epochs = 200, verbose = 2)
+    model.fit(xInputs, xOutputs, epochs = 200, verbose = 2, callbacks=callbacks_list)
 	# demonstrate prediction
+    model = keras.models.load_model('model')
 
-    x_input=np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                     31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63])
-                     
-    x_input2=x_input.reshape((1, int(chunkLength*Z), n_features))
+    x_input=np.array(flatten(essentials.makeArray('/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/32.schematic'), Z,Y,xSize))          
+    x_input2=x_input.reshape((1, int(chunkLength*Z), 1))
     y_output=model.predict(x_input2, verbose = 0)
 
-    
 
     y_output3d = plump(Z, Y, ySize, y_output[0], True)
 
     print(plump(Z, Y, ySize, y_output[0], False))
     print(y_output3d)
 
-    sf = SchematicFile(shape=(Z, Y, ySize))
-    assert sf.blocks.shape == (Z,Y, ySize)
-
-
-    sf.blocks= y_output3d
-    sf.save('example.schematic')
-
+    essentials.makeBlocks(y_output3d, '/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/output.schematic', Z,Y,ySize)
 
     flag1=2
