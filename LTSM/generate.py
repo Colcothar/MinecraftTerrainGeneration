@@ -1,9 +1,10 @@
 from nbtschematic import SchematicFile
 import numpy as np
-import essentials
+import sys
+sys.path.append('/home/ist/Desktop/AI/MinecraftTerrainGeneration/utils/')
+import utils
 from itertools import chain
 import keras
-
 from keras.layers import LSTM
 from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
@@ -19,7 +20,7 @@ import math
 
 #print(array)
 
-array = essentials.makeArray('/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/2048.schematic')
+array = utils.makeArray('/home/ist/Desktop/AI/MinecraftTerrainGeneration/LTSM/2048.schematic')
 
 global xSize
 xSize = 2
@@ -130,9 +131,9 @@ while flag1 == 1:
     xInputs=xInputs.reshape((xInputs.shape[0], xInputs.shape[1], n_features))
 	# define model
     model=keras.models.Sequential()
-    model.add(LSTM(10, activation='relu', return_sequences=True,
+    model.add(LSTM(100, activation='relu', return_sequences=True,
               input_shape=(int(chunkLength*Z), n_features)))
-    model.add(LSTM(10, activation='relu'))
+    model.add(LSTM(100, activation='relu'))
     model.add(Dense(Y*ySize*Z))
     model.compile(optimizer = 'adam', loss = 'mse')
     model.save('model')
